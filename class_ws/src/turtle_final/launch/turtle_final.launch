@@ -1,0 +1,12 @@
+<launch>
+    <node pkg="turtle_final" type="turtle_final_node" name="turtle_final_node" output="screen">
+        <param name="turtle_name" type="string" value="turtle1"/>
+    </node>
+
+    <node pkg="turtlesim" type="turtlesim_node" name="turtlesim_node" output="screen">
+        <param name="background_b" type="int" value="255"/>
+        <param name="background_g" type="int" value="255"/>
+        <param name="background_r" type="int" value="255"/>
+    </node>
+
+</launch>
