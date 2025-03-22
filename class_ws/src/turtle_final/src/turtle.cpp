@@ -5,8 +5,13 @@
 #include <turtlesim/Spawn.h>
 #include <turtlesim/Kill.h>
 #include <cmath>
+#include <std_msgs/Float64.h>
 
 using namespace std;
+
+// Differential drive parameters
+const double WHEEL_RADIUS = 0.05; // m
+const double WHEEL_SEPARATION = 0.20; // m
 
 double goal_x[] = {2.0, 2.0, 4.0, 2.0, 6.0, 2.0, 8.0, 2.0, 10.0, 2.0};
 double goal_y[] = {9.0, 2.0, 9.0, 2.0, 9.0, 2.0, 9.0, 2.0, 9.0, 2.0};
@@ -103,14 +108,32 @@ int main(int argc, char **argv) {
     ros::Subscriber pose_sub = nh.subscribe("turtle1/pose", 10, poseCallback);
     ros::Publisher vel_pub = nh.advertise<geometry_msgs::Twist>("turtle1/cmd_vel", 10);
     geometry_msgs::Twist vel_msg;
+    
+    // Publishers for wheel velocities of turtle1
+    ros::Publisher left_wheel_pub1 = nh.advertise<std_msgs::Float64>("turtle1/left_wheel_vel", 10);
+    ros::Publisher right_wheel_pub1 = nh.advertise<std_msgs::Float64>("turtle1/right_wheel_vel", 10);
+    std_msgs::Float64 left_wheel_msg1;
+    std_msgs::Float64 right_wheel_msg1;
 
     ros::Subscriber pose_sub2 = nh.subscribe("turtle2/pose", 10, poseCallback2);
     ros::Publisher vel_pub2 = nh.advertise<geometry_msgs::Twist>("turtle2/cmd_vel", 10);
     geometry_msgs::Twist vel_msg2;
+    
+    // Publishers for wheel velocities of turtle2
+    ros::Publisher left_wheel_pub2 = nh.advertise<std_msgs::Float64>("turtle2/left_wheel_vel", 10);
+    ros::Publisher right_wheel_pub2 = nh.advertise<std_msgs::Float64>("turtle2/right_wheel_vel", 10);
+    std_msgs::Float64 left_wheel_msg2;
+    std_msgs::Float64 right_wheel_msg2;
 
     ros::Subscriber pose_sub3 = nh.subscribe("turtle3/pose", 10, poseCallback3);
     ros::Publisher vel_pub3 = nh.advertise<geometry_msgs::Twist>("turtle3/cmd_vel", 10);
     geometry_msgs::Twist vel_msg3;
+    
+    // Publishers for wheel velocities of turtle3
+    ros::Publisher left_wheel_pub3 = nh.advertise<std_msgs::Float64>("turtle3/left_wheel_vel", 10);
+    ros::Publisher right_wheel_pub3 = nh.advertise<std_msgs::Float64>("turtle3/right_wheel_vel", 10);
+    std_msgs::Float64 left_wheel_msg3;
+    std_msgs::Float64 right_wheel_msg3;
 
     while (ros::ok()) {
         if (turning == false && waiting == false) {
@@ -174,7 +197,14 @@ int main(int argc, char **argv) {
             }
         }
 
+        // Publish turtle1 velocity
         vel_pub.publish(vel_msg);
+        
+        // Calculate and publish differential drive wheel velocities for turtle1
+        left_wheel_msg1.data = (vel_msg.linear.x - (vel_msg.angular.z * WHEEL_SEPARATION / 2)) / WHEEL_RADIUS;
+        right_wheel_msg1.data = (vel_msg.linear.x + (vel_msg.angular.z * WHEEL_SEPARATION / 2)) / WHEEL_RADIUS;
+        left_wheel_pub1.publish(left_wheel_msg1);
+        right_wheel_pub1.publish(right_wheel_msg1);
 
         // Repeat for turtle 2
         if (turning2 == false && waiting2 == false) {
@@ -238,8 +268,14 @@ int main(int argc, char **argv) {
             }
         }
 
+        // Publish turtle2 velocity
         vel_pub2.publish(vel_msg2);
-
+        
+        // Calculate and publish differential drive wheel velocities for turtle2
+        left_wheel_msg2.data = (vel_msg2.linear.x - (vel_msg2.angular.z * WHEEL_SEPARATION / 2)) / WHEEL_RADIUS;
+        right_wheel_msg2.data = (vel_msg2.linear.x + (vel_msg2.angular.z * WHEEL_SEPARATION / 2)) / WHEEL_RADIUS;
+        left_wheel_pub2.publish(left_wheel_msg2);
+        right_wheel_pub2.publish(right_wheel_msg2);
 
         // Repeat for turtle 3
         if (turning3 == false && waiting3 == false) {
@@ -307,8 +343,14 @@ int main(int argc, char **argv) {
             }
         }
 
+        // Publish turtle3 velocity
         vel_pub3.publish(vel_msg3);
-
+        
+        // Calculate and publish differential drive wheel velocities for turtle3
+        left_wheel_msg3.data = (vel_msg3.linear.x - (vel_msg3.angular.z * WHEEL_SEPARATION / 2)) / WHEEL_RADIUS;
+        right_wheel_msg3.data = (vel_msg3.linear.x + (vel_msg3.angular.z * WHEEL_SEPARATION / 2)) / WHEEL_RADIUS;
+        left_wheel_pub3.publish(left_wheel_msg3);
+        right_wheel_pub3.publish(right_wheel_msg3);
 
         ros::spinOnce();
         loop_rate.sleep();
